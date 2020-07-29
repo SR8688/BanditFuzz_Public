@@ -1,0 +1,71 @@
+#+Title: Extending BanditFuzz: Towards Comprehensive Testing of SMT-Solvers
+#+Author: Michael Lynch (20852964) and Shadman Raihan (20858688)
+#+OPTIONS: toc:nil
+#+OPTIONS: \n:t
+#+LATEX_CLASS_OPTIONS: [letter,11pt,twocolumn]
+#+LATEX_HEADER: \usepackage[left=18mm,right=18mm,top=25mm,bottom=25mm]{geometry}
+#+LATEX_HEADER: \setlength{\columnsep}{5mm}
+#+LATEX_HEADER: \usepackage{comment}
+#+LATEX_HEADER: \usepackage[ruled, linesnumbered, boxed]{algorithm2e}
+
+
+# Novelty, execution, potential for impact
+
+* Abstract
+Satisfiability Modulo Theories (SMT) is about checking whether a first-order formula is satisfiable over one or more logical theories. SMT solvers are essential in the field of software engineering and security research since solvers are used as back-end engines in model-checking applications. Due to the complex implementation of SMT solvers, it may contain serious bugs which can lead to a security vulnerability. So, it is essential that we develop a robust fuzzing tool for the solvers. In our project, we will extend the BanditFuzz which is a fuzzing system based on reinforcement learning (RL). BanditFuzz currently focuses on SMT floating-point arithmetic (FP) while we will extend it to SMT bit-vector and strings. BanditFuzz mutates well-formed inputs in a grammar-preserving way and uses RL techniques to identify the grammatical constructs which cause performance issues in the programs. The aim of our project will be to explore other methods including Markov chain Monte Carlo (MCMC), Graph search that will improve the fuzzing performance of BanditFuzz.
+
+
+* Introduction and Motivation
+
+* Problem Statement
+
+* Implemented Solution
+
+* Proposed Solutions
+Fuzz testing is well suited to locating the types of problems described above, but a naive approach fails for a few reasons.   
+- Since SMT solvers analyze computer programs, they necessarily expect input in a formal language, restricting the possible inputs to that generated from a specified alphabet with a context-free grammar.
+- A randomly constructed input is highly unlikely to be well-formed.
+- Even with full knowledge of the alphabet and grammar, there are an infinite number of possible constructs in the language.
+The problem of fuzzing an SMT solver then becomes: given a formal language $L$, find those words in $L$ which elicit malicious behaviour upon input to the solver.   
+The BanditFuzz\cite{bandit} fuzzer solves these problems by combining the grammar-aware approach of mutational fuzzing with reinforcement learning techniques to rapidly locate inputs detrimental to performance. Typical mutation fuzzers do not utilise feedback, therefore wasting valuable information gained from program behaviour.  
+Although BanditFuzz has proven extremely successful in solving this problem, it still permits further extension and optimization which is the focus of this project.  
+Firstly, BanditFuzz should be extended to support more of the primitives outlined in the SMT-Lib standard \cite{SMT}, namely bit vectors, although arrays and algebraic primitives could be considered with further research.  
+Secondly, as shown in the BanditFuzz paper\cite{bandit}, the mutation with reinforcement learning approach reduces to the multi-armed bandit problem, which suggests that there are multiple approaches to the problem. Therefore, approaches ranging from MCMC sampling to simple graph search algorithms will be evaluated with an aim towards optimizing the operation of the fuzzer. Other metrics such as parallelizability will also be considered, with a view towards practical deployment.
+
+
+* Benchmarks
+The benchmarks in this paper will be similar to those used in the BanditFuzz paper, with some additions:
+To evaluate the bitvector additions a bitvector SMT solver such as Beaver\cite{beaver} or Boolector\cite{boolector} must be used.  
+The original BanditFuzz paper\cite{bandit} uses the SMT solvers Z3, CVC4, MathSAT, Colibri which are floating point solvers and Z3str3 which is a string solver. These will be evaluated as in the paper to provide a control.  
+The SMT solvers from the BanditFuzz paper will also be used to evaluate any modifications to the reinforcement learning portion.  
+If any other primitives are added to BanditFuzz then corresponding SMT solvers must be used.
+
+
+* Plan of Action
+|    Week | Task                                                                               |
+| Ongoing | Literature review. Automated testing. Code refactoring.                            |
+|       1 | Fork BanditFuzz repository and set up BanditFuzz as is                             |
+|       2 | Add test cases as outlined in the original paper, set up test suite                |
+|       3 | Begin bit-vector fuzzer prototype                                                  |
+|       4 | Modularize reinforcement learning portion and begin modifications as modules       |
+|       5 | Review progress on bit-vector fuzzer. Begin graph search techniques (DFS)          |
+|       6 | Finish bit-vector fuzzer.                                                          |
+|       7 | Review progress on graph search techniques. Start MCMC techniques.                 |
+|       8 | Using knowledge gained from bit-vectors build additional extensions. Begin report. |
+|       9 | Wrap up project. Get to a production state.                                        |
+|      10 | End.                                                                               |
+
+
+* Proposed Demonstration
+A demonstration of the modified fuzzer will involve performing the same evaluation as given in the BanditFuzz paper\cite{bandit} as a contro, and then evaluations of the modified portions. This would proceed as follows: 
+1) Evaluate BanditFuzz on the SMT solvers as given in the original paper, on a restricted number of inputs to save time. The time taken to solve should be logged.
+2) Evaluate BanditFuzz with the additional bit-vector, etc functionality on a corresponding solver, for example Beaver, and compare with the performance in step 1).
+3) Evaluate BanditFuzz with the modified approach to the multi-armed bandit problem on the same benchmarks given above, comparing and contrasting performance.
+
+
+* References
+-BanditFuzz paper
+-Look up MCMC techniques
+-Bitvectors (SMT-Lib Standard) http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf
+-Beaver https://people.eecs.berkeley.edu/~sseshia/pubdir/beaver-cav09.pdf
+-Boolector https://link.springer.com/chapter/10.1007/978-3-642-00768-2_16
