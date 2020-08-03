@@ -1,10 +1,14 @@
 from ..parser import args as settings
-from ..util import warning,die
+from ..util import warning, die
 from .node import Node
 from .benchmark import Benchmark
 from sklearn.preprocessing import normalize as norm
-import inspect,pdb,random,copy
+import inspect
+import pdb
+import random
+import copy
 import numpy as np
+
 
 class Fuzzer:
     def __init__(self):
@@ -13,30 +17,31 @@ class Fuzzer:
         self.quantifiers = []
         self.actions = []
         self.literals = {
-            'bool'  : [],
-            'fp'    : [],
-            'bv'    : [],
-            'int'   : [],
-            'real'  : [],
-            'str'   : [],
-            'reg'   : [],
-            'arr'   : [],
-            'uf'    : [],
-            'round' : [],
+            'bool': [],
+            'fp': [],
+            'bv': [],
+            'int': [],
+            'real': [],
+            'str': [],
+            'reg': [],
+            'arr': [],
+            'uf': [],
+            'round': [],
         }
         self.constructs = {
-            'bool'  : [],
-            'fp'    : [],
-            'bv'    : [],
-            'int'   : [],
-            'real'  : [],
-            'str'   : [],
-            'reg'   : [],
-            'arr'   : [],
-            'uf'    : [],
-            'round' : [],
+            'bool': [],
+            'fp': [],
+            'bv': [],
+            'int': [],
+            'real': [],
+            'str': [],
+            'reg': [],
+            'arr': [],
+            'uf': [],
+            'round': [],
         }
         self._mk_from_settings()
+
     def _mk_from_settings(self):
         from .core import constructs as core_constructs
         from .core.literal import BoolLiteral
@@ -48,7 +53,8 @@ class Fuzzer:
             raise NotImplementedError
             self.quantifed = True
             from .core import quantifiers
-            self.quantifiers = [o[1] for o in inspect.getmembers(quantifiers) if inspect.isclass(o[1])]
+            self.quantifiers = [o[1] for o in inspect.getmembers(
+                quantifiers) if inspect.isclass(o[1])]
             self.actions += self.quantifiers
         else:
             self.logic += 'QF_'
@@ -61,28 +67,29 @@ class Fuzzer:
 
         if settings.strings:
             from .str import constructs as str_const_mod
-            from .str.literal import StrLiteral,RegExLiteral
+            from .str.literal import StrLiteral, RegExLiteral
             self.literals['str'] += [StrLiteral]
             self.literals['reg'] += [RegExLiteral]
             if not settings.integer:
                 from .int.literal import IntLiteral
-                self.literals['int']  += [IntLiteral]
+                self.literals['int'] += [IntLiteral]
 
             self.logic += "S"
-            str_constructs = [o[1] for o in inspect.getmembers(str_const_mod) if inspect.isclass(o[1])]
+            str_constructs = [o[1] for o in inspect.getmembers(
+                str_const_mod) if inspect.isclass(o[1])]
             self.actions += str_constructs
-            for const in str_constructs: 
+            for const in str_constructs:
                 self.constructs[const().sort].append(const)
 
-
         if settings.fp:
-            from .fp.literal import FPLiteral,RoundLiteral
+            from .fp.literal import FPLiteral, RoundLiteral
             from .fp import constructs as fp_constructs_module
-            self.literals['fp']     += [FPLiteral]           
-            self.literals['round']  += [RoundLiteral]
+            self.literals['fp'] += [FPLiteral]
+            self.literals['round'] += [RoundLiteral]
 
             self.logic += 'FP'
-            fp_constructs = [o[1] for o in inspect.getmembers(fp_constructs_module) if inspect.isclass(o[1])]
+            fp_constructs = [o[1] for o in inspect.getmembers(
+                fp_constructs_module) if inspect.isclass(o[1])]
             self.actions += fp_constructs
             for const in fp_constructs:
                 self.constructs[const().sort].append(const)
@@ -105,22 +112,23 @@ class Fuzzer:
         if settings.real:
             raise NotImplementedError
 
-
         for ban_op in settings.ban:
             found = False
             for sort in self.constructs:
-                for it,op in enumerate(self.constructs[sort]):
+                for it, op in enumerate(self.constructs[sort]):
                     if str(op()) == ban_op:
                         found = True
                         break
-                if found: break
-            if not found: die("Could not find input operator: ", ban_op)
+                if found:
+                    break
+            if not found:
+                die("Could not find input operator: ", ban_op)
             del self.constructs[sort][it]
 
     def gen(self):
         benchmark = Benchmark(logic=self.logic)
 
-        ##Add variables to benchmark
+        # Add variables to benchmark
         from .core.variable import BoolVariable
         for _ in range(settings.vars):
             benchmark.add_var(BoolVariable(f'bool_{_}'))
@@ -139,12 +147,18 @@ class Fuzzer:
         if settings.fp:
             from .fp.variable import FP_Variable as FPVariable
             for _ in range(settings.vars):
-                if   settings._8:   benchmark.add_var(FPVariable(f'fp_{_}',3,5))
-                elif settings._16:  benchmark.add_var(FPVariable(f'fp_{_}',5,11))
-                elif settings._32:  benchmark.add_var(FPVariable(f'fp_{_}',8,24))
-                elif settings._64:  benchmark.add_var(FPVariable(f'fp_{_}',11,53))
-                elif settings._128: benchmark.add_var(FPVariable(f'fp_{_}',15,113))
-                elif settings._256: benchmark.add_var(FPVariable(f'fp_{_}',19,237))
+                if settings._8:
+                    benchmark.add_var(FPVariable(f'fp_{_}', 3, 5))
+                elif settings._16:
+                    benchmark.add_var(FPVariable(f'fp_{_}', 5, 11))
+                elif settings._32:
+                    benchmark.add_var(FPVariable(f'fp_{_}', 8, 24))
+                elif settings._64:
+                    benchmark.add_var(FPVariable(f'fp_{_}', 11, 53))
+                elif settings._128:
+                    benchmark.add_var(FPVariable(f'fp_{_}', 15, 113))
+                elif settings._256:
+                    benchmark.add_var(FPVariable(f'fp_{_}', 19, 237))
                 # elif settings.rand_bit_len: benchmark.add_var(FPVariable(f'fp_{_}',random.randint(0,256), random.randint(0,256)))
                 # else:
                 #     opts =  (FPVariable(f'fp_{_}',3,5), FPVariable(f'fp_{_}',5,11), FPVariable(f'fp_{_}',8,24), FPVariable(f'fp_{_}',11,53), FPVariable(f'fp_{_}',15,113), FPVariable(f'fp_{_}',19,237), FPVariable(f'fp_{_}',random.randint(2,256), random.randint(2,256)))
@@ -166,7 +180,7 @@ class Fuzzer:
             raise NotImplementedError
 
         for _ in range(settings.nassert):
-            benchmark.check(self.mk_ast(depth=0,benchmark=benchmark))
+            benchmark.check(self.mk_ast(depth=0, benchmark=benchmark))
 
         return benchmark
 
@@ -174,84 +188,100 @@ class Fuzzer:
         if depth == settings.depth:
             if sort == 'round' or sort == 'reg':
                 return Node(random.choice(self.literals[sort])())
-            opts =  [random.choice(benchmark.vars(sort=sort)),    random.choice(self.literals[sort])()]
-            odds =  [1,                                           1]
+            opts = [random.choice(benchmark.vars(sort=sort)),
+                    random.choice(self.literals[sort])()]
+            odds = [1,                                           1]
             return Node(
                 np.random.choice(
-                    p= odds/np.linalg.norm(odds)**2,
-                    a= opts,
+                    p=odds/np.linalg.norm(odds)**2,
+                    a=opts,
                 )
             )
         ret = Node(random.choice(self.constructs[sort])())
         for _ in range(ret.val.arity):
-            ret.children.append(self.mk_ast(depth=depth+1, benchmark=benchmark, sort=ret.val.sig[_]))
+            ret.children.append(self.mk_ast(
+                depth=depth+1, benchmark=benchmark, sort=ret.val.sig[_]))
         return ret
 
-    def mutate(self, benchmark, construct): ##extremely gross. refactor ASAP
+    def mutate(self, benchmark, construct):  # extremely gross. refactor ASAP
         return_benchmark = copy.deepcopy(benchmark)
         construct_sort = construct().sort
-        def inorder_ast_counter(node,sort):
+
+        def inorder_ast_counter(node, sort):
             n = 1 if node.sort == sort else 0
             for child in node.children:
-                n += inorder_ast_counter(child,sort)
+                n += inorder_ast_counter(child, sort)
             return n
         total = 0
         for assertion in return_benchmark.assertions:
             total += inorder_ast_counter(assertion, construct_sort)
-        if total == 0: return None
-        indx =  np.random.randint(0,total)
+        if total == 0:
+            return None
+        indx = np.random.randint(0, total)
 
-        def get_node(node,indx,depth=0,cur_indx=0):
-            if node.sort == construct_sort:
-                if indx == cur_indx: return node,cur_indx
-                else: cur_indx += 1
-            for child in node.children:
-                ret,cur_indx = get_node(child,indx,depth=depth+1,cur_indx=cur_indx)
-                if ret != None: return ret,cur_indx
-            return None,cur_indx
-
-
-        def set_node(node,new_node,indx,depth=0,cur_indx=0):
+        def get_node(node, indx, depth=0, cur_indx=0):
             if node.sort == construct_sort:
                 if indx == cur_indx:
-                    return False,cur_indx
-                else: cur_indx += 1
-            for it,child in enumerate(node.children):
-                ret,cur_indx = get_node(child,sort,indx,depth=depth+1,cur_indx=cur_indx)
-                if ret != None: 
+                    return node, cur_indx
+                else:
+                    cur_indx += 1
+            for child in node.children:
+                ret, cur_indx = get_node(
+                    child, indx, depth=depth+1, cur_indx=cur_indx)
+                if ret != None:
+                    return ret, cur_indx
+            return None, cur_indx
+
+        def set_node(node, new_node, indx, depth=0, cur_indx=0):
+            if node.sort == construct_sort:
+                if indx == cur_indx:
+                    return False, cur_indx
+                else:
+                    cur_indx += 1
+            for it, child in enumerate(node.children):
+                ret, cur_indx = get_node(
+                    child, sort, indx, depth=depth+1, cur_indx=cur_indx)
+                if ret != None:
                     if ret == False:
                         node[it] = new_node
                         return True, cur_indx
-                    else: return ret,cur_indx
-            return None,cur_indx
+                    else:
+                        return ret, cur_indx
+            return None, cur_indx
 
         cur_indx = 0
         for assertion in return_benchmark.assertions:
-            node,cur_indx = get_node(assertion,indx,depth=0,cur_indx=0)
-            if node != None: break
+            node, cur_indx = get_node(assertion, indx, depth=0, cur_indx=0)
+            if node != None:
+                break
         assert node != None
         sorted_children = {}
-        children_its    = {}
+        children_its = {}
         for child in node.children:
-            if child.sort not in sorted_children: 
+            if child.sort not in sorted_children:
                 sorted_children[child.sort] = []
-                children_its[child.sort]    = 0
+                children_its[child.sort] = 0
             sorted_children[child.sort].append(child)
         new_node = Node(val=construct())
         for i in range(new_node.val.arity):
             child_sort = new_node.val.sig[i]
             if child_sort in sorted_children:
                 if children_its[child_sort] < len(sorted_children[child_sort]):
-                    new_node.children.append(sorted_children[child_sort][children_its[child_sort]])
+                    new_node.children.append(
+                        sorted_children[child_sort][children_its[child_sort]])
                     children_its[child_sort] += 1
                 else:
-                    new_node.children.append(self.mk_ast(depth+1,return_benchmark,child_sort))
-            else:  new_node.children.append(self.mk_ast(depth+1,return_benchmark,child_sort))
-        
-        for it,assertion in enumerate(return_benchmark.assertions):
-            result,_ = set_node(assertion,construct_sort,indx)
-            if   result == True:    break
-            elif result == False:   return_benchmark.assertions[it] = new_node
-            else:                   continue
+                    new_node.children.append(self.mk_ast(
+                        depth+1, return_benchmark, child_sort))
+            else:
+                new_node.children.append(self.mk_ast(
+                    depth+1, return_benchmark, child_sort))
 
-
+        for it, assertion in enumerate(return_benchmark.assertions):
+            result, _ = set_node(assertion, construct_sort, indx)
+            if result == True:
+                break
+            elif result == False:
+                return_benchmark.assertions[it] = new_node
+            else:
+                continue

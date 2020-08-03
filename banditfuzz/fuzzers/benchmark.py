@@ -1,26 +1,30 @@
 from .node import Node
 
-class Benchmark:                ##return type of fuzzer.gen, fuzzer.mutate
+
+class Benchmark:  # return type of fuzzer.gen, fuzzer.mutate
     def __init__(self, logic):
         self.logic = logic       # i.e, (set-logic LOGIC)
         self.assertions = []    # List of asserting ASTNodes1
         self._vars = {}
         self.solver_data = {}
-    def vars(self,sort=None): 
-        if sort: return self._vars[sort]
+
+    def vars(self, sort=None):
+        if sort:
+            return self._vars[sort]
         else:
             ret = []
-            for sort in self._vars: ret += self._vars[sort]
+            for sort in self._vars:
+                ret += self._vars[sort]
             return ret
 
-    def add_var(self,var):
-        if var.sort not in self._vars: self._vars[var.sort] = [] 
+    def add_var(self, var):
+        if var.sort not in self._vars:
+            self._vars[var.sort] = []
         self._vars[var.sort].append(var)
 
     def check(self, node):
-        assert isinstance(node,Node)
+        assert isinstance(node, Node)
         self.assertions.append(node)
-
 
     def __str__(self):
         ret = ''

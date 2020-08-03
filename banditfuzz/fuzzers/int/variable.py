@@ -1,6 +1,8 @@
 from ..variable import Variable
+
+
 class IntVariable(Variable):
-    def __init__(self,name):
+    def __init__(self, name):
         self.name = name
         self.sort = 'int'
 
