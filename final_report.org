@@ -1,8 +1,10 @@
 #+Title: Extending BanditFuzz: Towards Comprehensive Testing of SMT-Solvers
 #+Author: Michael Lynch (20852964) and Shadman Raihan (20858688)
 #+OPTIONS: toc:nil
+#+OPTIONS: num:nil
 #+OPTIONS: \n:t
-#+LATEX_CLASS_OPTIONS: [letter,11pt,twocolumn]
+#+LATEX_CLASS_OPTIONS: [article,11pt]
+
 #+LATEX_HEADER: \usepackage[left=18mm,right=18mm,top=25mm,bottom=25mm]{geometry}
 #+LATEX_HEADER: \setlength{\columnsep}{5mm}
 #+LATEX_HEADER: \usepackage{comment}
@@ -12,16 +14,11 @@
 # Novelty, execution, potential for impact
 
 * Abstract
-Satisfiability Modulo Theories (SMT) is about checking whether a first-order formula is satisfiable over one or more logical theories. SMT solvers are essential in the field of software engineering and security research since solvers are used as back-end engines in model-checking applications. Due to the complex implementation of SMT solvers, it may contain serious bugs which can lead to a security vulnerability. So, it is essential that we develop a robust fuzzing tool for the solvers. In our project, we will extend the BanditFuzz which is a fuzzing system based on reinforcement learning (RL). BanditFuzz currently focuses on SMT floating-point arithmetic (FP) while we will extend it to SMT bit-vector and strings. BanditFuzz mutates well-formed inputs in a grammar-preserving way and uses RL techniques to identify the grammatical constructs which cause performance issues in the programs. The aim of our project will be to explore other methods including Markov chain Monte Carlo (MCMC), Graph search that will improve the fuzzing performance of BanditFuzz.
 
+* Introduction
+** Problem Statement
 
-* Introduction and Motivation
-
-* Problem Statement
-
-* Implemented Solution
-
-* Proposed Solutions
+# REWRITE BELOW
 Fuzz testing is well suited to locating the types of problems described above, but a naive approach fails for a few reasons.   
 - Since SMT solvers analyze computer programs, they necessarily expect input in a formal language, restricting the possible inputs to that generated from a specified alphabet with a context-free grammar.
 - A randomly constructed input is highly unlikely to be well-formed.
@@ -31,6 +28,21 @@ The BanditFuzz\cite{bandit} fuzzer solves these problems by combining the gramma
 Although BanditFuzz has proven extremely successful in solving this problem, it still permits further extension and optimization which is the focus of this project.  
 Firstly, BanditFuzz should be extended to support more of the primitives outlined in the SMT-Lib standard \cite{SMT}, namely bit vectors, although arrays and algebraic primitives could be considered with further research.  
 Secondly, as shown in the BanditFuzz paper\cite{bandit}, the mutation with reinforcement learning approach reduces to the multi-armed bandit problem, which suggests that there are multiple approaches to the problem. Therefore, approaches ranging from MCMC sampling to simple graph search algorithms will be evaluated with an aim towards optimizing the operation of the fuzzer. Other metrics such as parallelizability will also be considered, with a view towards practical deployment.
+# REWRITE ABOVE
+** Relevance
+** Description of Work
+
+* Method
+** Bitvector Theory
+** Description of Algorithm
+
+* Results
+
+* Conclusions and Future Work
+
+
+* Proposed Solutions
+
 
 
 * Benchmarks
@@ -41,19 +53,6 @@ The SMT solvers from the BanditFuzz paper will also be used to evaluate any modi
 If any other primitives are added to BanditFuzz then corresponding SMT solvers must be used.
 
 
-* Plan of Action
-|    Week | Task                                                                               |
-| Ongoing | Literature review. Automated testing. Code refactoring.                            |
-|       1 | Fork BanditFuzz repository and set up BanditFuzz as is                             |
-|       2 | Add test cases as outlined in the original paper, set up test suite                |
-|       3 | Begin bit-vector fuzzer prototype                                                  |
-|       4 | Modularize reinforcement learning portion and begin modifications as modules       |
-|       5 | Review progress on bit-vector fuzzer. Begin graph search techniques (DFS)          |
-|       6 | Finish bit-vector fuzzer.                                                          |
-|       7 | Review progress on graph search techniques. Start MCMC techniques.                 |
-|       8 | Using knowledge gained from bit-vectors build additional extensions. Begin report. |
-|       9 | Wrap up project. Get to a production state.                                        |
-|      10 | End.                                                                               |
 
 
 * Proposed Demonstration
