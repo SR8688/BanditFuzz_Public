@@ -14,11 +14,19 @@
 # Novelty, execution, potential for impact
 
 * Abstract
-
+# Write at the end
 * Introduction
 ** Problem Statement
+- software testing in general
+- SAT/SMT solvers
+- testing SAT/SMT solvers
+- fuzz testing and why it is useful
+- the drawbacks of fuzz testing (grammars)
+- guided/smart fuzz testing
+- banditfuzz
+- limitations of banditfuzz
 
-# REWRITE BELOW
+# ==== REWRITE THIS VVV
 Fuzz testing is well suited to locating the types of problems described above, but a naive approach fails for a few reasons.   
 - Since SMT solvers analyze computer programs, they necessarily expect input in a formal language, restricting the possible inputs to that generated from a specified alphabet with a context-free grammar.
 - A randomly constructed input is highly unlikely to be well-formed.
@@ -27,21 +35,40 @@ The problem of fuzzing an SMT solver then becomes: given a formal language $L$, 
 The BanditFuzz\cite{bandit} fuzzer solves these problems by combining the grammar-aware approach of mutational fuzzing with reinforcement learning techniques to rapidly locate inputs detrimental to performance. Typical mutation fuzzers do not utilise feedback, therefore wasting valuable information gained from program behaviour.  
 Although BanditFuzz has proven extremely successful in solving this problem, it still permits further extension and optimization which is the focus of this project.  
 Firstly, BanditFuzz should be extended to support more of the primitives outlined in the SMT-Lib standard \cite{SMT}, namely bit vectors, although arrays and algebraic primitives could be considered with further research.  
-Secondly, as shown in the BanditFuzz paper\cite{bandit}, the mutation with reinforcement learning approach reduces to the multi-armed bandit problem, which suggests that there are multiple approaches to the problem. Therefore, approaches ranging from MCMC sampling to simple graph search algorithms will be evaluated with an aim towards optimizing the operation of the fuzzer. Other metrics such as parallelizability will also be considered, with a view towards practical deployment.
-# REWRITE ABOVE
+
+# ==== REWRITE THIS ^^^
 ** Relevance
+- 
 ** Description of Work
+- implementation of bitvector theory
+- connection of the theory to the fuzzer
 
 * Method
 ** Bitvector Theory
+- decription of bitvector theory
+- encoding in banditfuzz format (code sample)
+- associated challenges
 ** Description of Algorithm
-
+- description of banditfuzz algorithm for generating inputs
+- example of output using bitvector theory
+- 
 * Results
-
+- inconclusive
 * Conclusions and Future Work
+- MCMC sampling
+# ==== REWRITE THIS VVV
+Secondly, as shown in the BanditFuzz paper\cite{bandit}, the mutation with reinforcement learning approach reduces to the multi-armed bandit problem, which suggests that there are multiple approaches to the problem. Therefore, approaches ranging from MCMC sampling to simple graph search algorithms will be evaluated with an aim towards optimizing the operation of the fuzzer. Other metrics such as parallelizability will also be considered, with a view towards practical deployment.
+# ==== REWRITE THIS ^^^
+- Additional theories
+- Refactoring banditfuzz, writing tests
 
-
-* Proposed Solutions
+* References
+# References go here, will convert to bibtex at some point
+-BanditFuzz paper
+-Look up MCMC techniques
+-Bitvectors (SMT-Lib Standard) http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf
+-Beaver https://people.eecs.berkeley.edu/~sseshia/pubdir/beaver-cav09.pdf
+-Boolector https://link.springer.com/chapter/10.1007/978-3-642-00768-2_16
 
 
 
@@ -61,10 +88,3 @@ A demonstration of the modified fuzzer will involve performing the same evaluati
 2) Evaluate BanditFuzz with the additional bit-vector, etc functionality on a corresponding solver, for example Beaver, and compare with the performance in step 1).
 3) Evaluate BanditFuzz with the modified approach to the multi-armed bandit problem on the same benchmarks given above, comparing and contrasting performance.
 
-
-* References
--BanditFuzz paper
--Look up MCMC techniques
--Bitvectors (SMT-Lib Standard) http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf
--Beaver https://people.eecs.berkeley.edu/~sseshia/pubdir/beaver-cav09.pdf
--Boolector https://link.springer.com/chapter/10.1007/978-3-642-00768-2_16
