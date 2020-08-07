@@ -25,11 +25,12 @@ Quantifiying the complexity of code is difficult but can be achieved somewhat by
 *** SAT/SMT solvers
 The Satisfiable Modulo Theories problem (SMT) is a decision problem which can be stated as follows\cite{notes:lec17}:
 - Given a formula $\phi$ in an algebra $\Sigma$, does there exist a variable assignment $\iota$ such that $\Sigma,\iota\models \phi$ ?
-When $\Sigma$ is the Boolean algebra, this reduces to the Boolean satisfiability (SAT) problem. 
-
-
-Solvers are also usually designed to return $\iota$, which is usually the focus of the problem in practical applications.
+When $\Sigma$ is the Boolean algebra, this reduces to the Boolean satisfiability (SAT) problem.  
+Well known algorithms to solve the Boolean SAT problem include the Davis-Putnam-Logemann-Loveland (DPLL) algorithm and Conflict-Driven Clause Learning (CDCL).
+# Z3, CRC4, ETC
+Solvers are also usually designed to return $\iota$, which is often the focus of the problem in practical applications.
 - their use as TAV tools
+
 *** Fuzzing
 - fuzz testing and why it is useful
 - the drawbacks of fuzz testing (grammars)

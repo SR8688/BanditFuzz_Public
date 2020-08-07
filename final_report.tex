@@ -1,0 +1,168 @@
+% Created 2020-08-07 Fri 18:41
+% Intended LaTeX compiler: pdflatex
+\documentclass[article,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[left=18mm,right=18mm,top=25mm,bottom=25mm]{geometry}
+\setlength{\columnsep}{5mm}
+\usepackage{comment}
+\usepackage[ruled, linesnumbered, boxed]{algorithm2e}
+\author{Michael Lynch (20852964) and Shadman Raihan (20858688)}
+\date{\today}
+\title{Extending BanditFuzz: Towards Comprehensive Testing of SMT-Solvers}
+\hypersetup{
+ pdfauthor={Michael Lynch (20852964) and Shadman Raihan (20858688)},
+ pdftitle={Extending BanditFuzz: Towards Comprehensive Testing of SMT-Solvers},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.1.9)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section*{Abstract}
+\label{sec:org04f7447}
+\section*{Introduction}
+\label{sec:orgdd6f161}
+\subsection*{Problem Statement}
+\label{sec:org26dc543}
+\subsubsection*{}
+\label{sec:org282eabb}
+Software testing has advanced substantially in the 50 or so years since software engineering became an established discipline but it still proves to be a challenge as software grows more complex.\\
+As with any engineering activity, creating and using software involves an element of risk, which can be mitigated, but not eliminated entirely. Faults in software can lead to a range of consequences, from loss of consumer confidence, financial penalties and in the most extreme cases, the loss of human life.\\
+The cost of finding and repairing faults is five times larger\cite{bk:amman} in the deployment phase compared to the system testing phase and about fifty times larger\cite{bk:amman} than in the development and unit testing phase. Therefore, it is in the best interests of both organizations and their clients to ensure that software is tested early and well.\\
+Quantifiying the complexity of code is difficult but can be achieved somewhat by creating a graph of the program execution and analyzing unique paths\cite{bk:amman}. However every conditional statement results in at least a doubling of subsequent paths and thus, a program with \(n\) conditionals will have \(O(2^n)\) possible paths. In 2015, Google had approximately 2 billion lines of code\cite{vid:googlecode} and an exponentially increasing number of commits per year, with approximately 30 million between 2010 and 2015 alone\cite{vid:googlecode}. Obviously, this is impossible to test manually, and even automated testing would struggle with such a large number of paths. The fact that some paths may only be accessible when certain inputs are provided adds another layer of complexity to the problem, so tools that can make this process more tractable are necessary.\\
+\subsubsection*{SAT/SMT solvers}
+\label{sec:org6c9059d}
+The Satisfiable Modulo Theories problem (SMT) is a decision problem which can be stated as follows\cite{notes:lec17}:\\
+\begin{itemize}
+\item Given a formula \(\phi\) in an algebra \(\Sigma\), does there exist a variable assignment \(\iota\) such that \(\Sigma,\iota\models \phi\) ?\\
+\end{itemize}
+When \(\Sigma\) is the Boolean algebra, this reduces to the Boolean satisfiability (SAT) problem.\\
+Well known algorithms to solve the Boolean SAT problem include the Davis-Putnam-Logemann-Loveland (DPLL) algorithm and Conflict-Driven Clause Learning (CDCL).\\
+
+Solvers are also usually designed to return \(\iota\), which is often the focus of the problem in practical applications.\\
+\begin{itemize}
+\item their use as TAV tools\\
+\end{itemize}
+
+\subsubsection*{Fuzzing}
+\label{sec:org962a62b}
+\begin{itemize}
+\item fuzz testing and why it is useful\\
+\item the drawbacks of fuzz testing (grammars)\\
+\item testing SAT/SMT solvers\\
+\item why is it hard?\\
+\item why test solvers other than its good practice?\\
+\item guided/smart fuzz testing\\
+\item banditfuzz\\
+\end{itemize}
+
+Fuzz testing is well suited to locating the types of problems described above, but a naive approach fails for a few reasons.\\
+\begin{itemize}
+\item Since SMT solvers analyze computer programs, they necessarily expect input in a formal language, restricting the possible inputs to that generated from a specified alphabet with a context-free grammar.\\
+\item A randomly constructed input is highly unlikely to be well-formed.\\
+\item Even with full knowledge of the alphabet and grammar, there are an infinite number of possible constructs in the language.\\
+\end{itemize}
+The problem of fuzzing an SMT solver then becomes: given a formal language \(L\), find those words in \(L\) which elicit malicious behaviour upon input to the solver.\\
+The BanditFuzz\cite{bandit} fuzzer solves these problems by combining the grammar-aware approach of mutational fuzzing with reinforcement learning techniques to rapidly locate inputs detrimental to performance. Typical mutation fuzzers do not utilise feedback, therefore wasting valuable information gained from program behaviour.\\
+Although BanditFuzz has proven extremely successful in solving this problem, it still permits further extension and optimization which is the focus of this project.\\
+Firstly, BanditFuzz should be extended to support more of the primitives outlined in the SMT-Lib standard \cite{SMT}, namely bit vectors, although arrays and algebraic primitives could be considered with further research.\\
+
+\begin{itemize}
+\item limitations of banditfuzz\\
+\item 
+\end{itemize}
+
+\subsection*{Relevance}
+\label{sec:org86f6410}
+\begin{itemize}
+\item SAT solvers extremely useful for verifying\\
+\end{itemize}
+
+\subsection*{Description of Work}
+\label{sec:orgecfedee}
+\begin{itemize}
+\item implementation of bitvector theory\\
+\item connection of the theory to the fuzzer\\
+\end{itemize}
+
+\section*{Method}
+\label{sec:org54dbdbd}
+\subsection*{Bitvector Theory}
+\label{sec:org27fcce0}
+\begin{itemize}
+\item decription of bitvector theory\\
+\item encoding in banditfuzz format (code sample)\\
+\item associated challenges\\
+\end{itemize}
+\subsection*{Description of Algorithm}
+\label{sec:org121b0b6}
+\begin{itemize}
+\item description of banditfuzz algorithm for generating inputs\\
+\item example of output using bitvector theory\\
+\item 
+\end{itemize}
+\section*{Results}
+\label{sec:org8664552}
+\begin{itemize}
+\item inconclusive\\
+\end{itemize}
+\section*{Conclusions and Future Work}
+\label{sec:org04f949f}
+\begin{itemize}
+\item MCMC sampling\\
+\end{itemize}
+
+Secondly, as shown in the BanditFuzz paper\cite{bandit}, the mutation with reinforcement learning approach reduces to the multi-armed bandit problem, which suggests that there are multiple approaches to the problem. Therefore, approaches ranging from MCMC sampling to simple graph search algorithms will be evaluated with an aim towards optimizing the operation of the fuzzer. Other metrics such as parallelizability will also be considered, with a view towards practical deployment.\\
+
+\begin{itemize}
+\item Additional theories\\
+\item Refactoring banditfuzz, writing tests\\
+\end{itemize}
+
+\section*{References}
+\label{sec:org9612120}
+\begin{itemize}
+\item ammann software testing\\
+\item BanditFuzz paper\\
+\item Look up MCMC techniques\\
+\item Bitvectors (SMT-Lib Standard) \url{http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf}\\
+\item Beaver \url{https://people.eecs.berkeley.edu/\~sseshia/pubdir/beaver-cav09.pdf}\\
+\item Boolector \url{https://link.springer.com/chapter/10.1007/978-3-642-00768-2\_16}\\
+\item Google Lines of code video \url{https://www.youtube.com/watch?v=W71BTkUbdqE}\\
+\end{itemize}
+
+
+\section*{Benchmarks}
+\label{sec:org3edba94}
+The benchmarks in this paper will be similar to those used in the BanditFuzz paper, with some additions:\\
+To evaluate the bitvector additions a bitvector SMT solver such as Beaver\cite{beaver} or Boolector\cite{boolector} must be used.\\
+The original BanditFuzz paper\cite{bandit} uses the SMT solvers Z3, CVC4, MathSAT, Colibri which are floating point solvers and Z3str3 which is a string solver. These will be evaluated as in the paper to provide a control.\\
+The SMT solvers from the BanditFuzz paper will also be used to evaluate any modifications to the reinforcement learning portion.\\
+If any other primitives are added to BanditFuzz then corresponding SMT solvers must be used.\\
+
+
+
+
+\section*{Proposed Demonstration}
+\label{sec:org541d313}
+A demonstration of the modified fuzzer will involve performing the same evaluation as given in the BanditFuzz paper\cite{bandit} as a contro, and then evaluations of the modified portions. This would proceed as follows:\\
+\begin{enumerate}
+\item Evaluate BanditFuzz on the SMT solvers as given in the original paper, on a restricted number of inputs to save time. The time taken to solve should be logged.\\
+\item Evaluate BanditFuzz with the additional bit-vector, etc functionality on a corresponding solver, for example Beaver, and compare with the performance in step 1).\\
+\item Evaluate BanditFuzz with the modified approach to the multi-armed bandit problem on the same benchmarks given above, comparing and contrasting performance.\\
+\end{enumerate}
+\end{document}
