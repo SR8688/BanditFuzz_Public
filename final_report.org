@@ -18,13 +18,20 @@
 * Introduction
 ** Problem Statement
 - software testing in general
-- SAT/SMT solvers
-- testing SAT/SMT solvers
+- why is testing important?
+- as software grows testing becomes more complex
+- need to automate tests, but hard when input is required
 - fuzz testing and why it is useful
 - the drawbacks of fuzz testing (grammars)
+- SAT/SMT solvers
+- their use as TAV tools
+- testing SAT/SMT solvers
+- why is it hard?
+- why test them other than its good practice?
 - guided/smart fuzz testing
 - banditfuzz
 - limitations of banditfuzz
+- 
 
 # ==== REWRITE THIS VVV
 Fuzz testing is well suited to locating the types of problems described above, but a naive approach fails for a few reasons.   
@@ -38,7 +45,8 @@ Firstly, BanditFuzz should be extended to support more of the primitives outline
 
 # ==== REWRITE THIS ^^^
 ** Relevance
-- 
+- SAT solvers extremely useful for verifying
+
 ** Description of Work
 - implementation of bitvector theory
 - connection of the theory to the fuzzer
