@@ -1,4 +1,4 @@
-% Created 2020-08-07 Fri 18:41
+% Created 2020-08-11 Tue 14:48
 % Intended LaTeX compiler: pdflatex
 \documentclass[article,11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -33,19 +33,19 @@
 \maketitle
 
 \section*{Abstract}
-\label{sec:org04f7447}
+\label{sec:org2c6e6fc}
 \section*{Introduction}
-\label{sec:orgdd6f161}
+\label{sec:orgb7c40c9}
 \subsection*{Problem Statement}
-\label{sec:org26dc543}
+\label{sec:orgef59ae1}
 \subsubsection*{}
-\label{sec:org282eabb}
+\label{sec:org42188b4}
 Software testing has advanced substantially in the 50 or so years since software engineering became an established discipline but it still proves to be a challenge as software grows more complex.\\
 As with any engineering activity, creating and using software involves an element of risk, which can be mitigated, but not eliminated entirely. Faults in software can lead to a range of consequences, from loss of consumer confidence, financial penalties and in the most extreme cases, the loss of human life.\\
 The cost of finding and repairing faults is five times larger\cite{bk:amman} in the deployment phase compared to the system testing phase and about fifty times larger\cite{bk:amman} than in the development and unit testing phase. Therefore, it is in the best interests of both organizations and their clients to ensure that software is tested early and well.\\
 Quantifiying the complexity of code is difficult but can be achieved somewhat by creating a graph of the program execution and analyzing unique paths\cite{bk:amman}. However every conditional statement results in at least a doubling of subsequent paths and thus, a program with \(n\) conditionals will have \(O(2^n)\) possible paths. In 2015, Google had approximately 2 billion lines of code\cite{vid:googlecode} and an exponentially increasing number of commits per year, with approximately 30 million between 2010 and 2015 alone\cite{vid:googlecode}. Obviously, this is impossible to test manually, and even automated testing would struggle with such a large number of paths. The fact that some paths may only be accessible when certain inputs are provided adds another layer of complexity to the problem, so tools that can make this process more tractable are necessary.\\
 \subsubsection*{SAT/SMT solvers}
-\label{sec:org6c9059d}
+\label{sec:orgf633480}
 The Satisfiable Modulo Theories problem (SMT) is a decision problem which can be stated as follows\cite{notes:lec17}:\\
 \begin{itemize}
 \item Given a formula \(\phi\) in an algebra \(\Sigma\), does there exist a variable assignment \(\iota\) such that \(\Sigma,\iota\models \phi\) ?\\
@@ -59,7 +59,7 @@ Solvers are also usually designed to return \(\iota\), which is often the focus 
 \end{itemize}
 
 \subsubsection*{Fuzzing}
-\label{sec:org962a62b}
+\label{sec:org0f5bd4e}
 \begin{itemize}
 \item fuzz testing and why it is useful\\
 \item the drawbacks of fuzz testing (grammars)\\
@@ -87,41 +87,41 @@ Firstly, BanditFuzz should be extended to support more of the primitives outline
 \end{itemize}
 
 \subsection*{Relevance}
-\label{sec:org86f6410}
+\label{sec:org18fc5a6}
 \begin{itemize}
 \item SAT solvers extremely useful for verifying\\
 \end{itemize}
 
 \subsection*{Description of Work}
-\label{sec:orgecfedee}
+\label{sec:org5cb5eef}
 \begin{itemize}
 \item implementation of bitvector theory\\
 \item connection of the theory to the fuzzer\\
 \end{itemize}
 
 \section*{Method}
-\label{sec:org54dbdbd}
+\label{sec:org5aa2de1}
 \subsection*{Bitvector Theory}
-\label{sec:org27fcce0}
+\label{sec:org46fb590}
 \begin{itemize}
 \item decription of bitvector theory\\
 \item encoding in banditfuzz format (code sample)\\
 \item associated challenges\\
 \end{itemize}
 \subsection*{Description of Algorithm}
-\label{sec:org121b0b6}
+\label{sec:org8246515}
 \begin{itemize}
 \item description of banditfuzz algorithm for generating inputs\\
 \item example of output using bitvector theory\\
 \item 
 \end{itemize}
 \section*{Results}
-\label{sec:org8664552}
+\label{sec:orge2768a8}
 \begin{itemize}
 \item inconclusive\\
 \end{itemize}
 \section*{Conclusions and Future Work}
-\label{sec:org04f949f}
+\label{sec:org7b5ae89}
 \begin{itemize}
 \item MCMC sampling\\
 \end{itemize}
@@ -134,7 +134,7 @@ Secondly, as shown in the BanditFuzz paper\cite{bandit}, the mutation with reinf
 \end{itemize}
 
 \section*{References}
-\label{sec:org9612120}
+\label{sec:org73838a1}
 \begin{itemize}
 \item ammann software testing\\
 \item BanditFuzz paper\\
@@ -147,7 +147,7 @@ Secondly, as shown in the BanditFuzz paper\cite{bandit}, the mutation with reinf
 
 
 \section*{Benchmarks}
-\label{sec:org3edba94}
+\label{sec:org17be5c7}
 The benchmarks in this paper will be similar to those used in the BanditFuzz paper, with some additions:\\
 To evaluate the bitvector additions a bitvector SMT solver such as Beaver\cite{beaver} or Boolector\cite{boolector} must be used.\\
 The original BanditFuzz paper\cite{bandit} uses the SMT solvers Z3, CVC4, MathSAT, Colibri which are floating point solvers and Z3str3 which is a string solver. These will be evaluated as in the paper to provide a control.\\
@@ -158,7 +158,7 @@ If any other primitives are added to BanditFuzz then corresponding SMT solvers m
 
 
 \section*{Proposed Demonstration}
-\label{sec:org541d313}
+\label{sec:orgbd10450}
 A demonstration of the modified fuzzer will involve performing the same evaluation as given in the BanditFuzz paper\cite{bandit} as a contro, and then evaluations of the modified portions. This would proceed as follows:\\
 \begin{enumerate}
 \item Evaluate BanditFuzz on the SMT solvers as given in the original paper, on a restricted number of inputs to save time. The time taken to solve should be logged.\\
