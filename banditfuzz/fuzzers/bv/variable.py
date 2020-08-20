@@ -7,7 +7,7 @@ class BV_Variable(Variable):
         self.name, self.width = name, width
 
     def declare(self):
-        return f'(declare-const {self.name} (_ FloatingPoint {self.width}))'
+        return f'(declare-const {self.name} (_ BitVec {self.width}))'
 
     def __str__(self):
         return self.name

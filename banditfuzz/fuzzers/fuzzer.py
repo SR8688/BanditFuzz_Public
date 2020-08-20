@@ -93,6 +93,7 @@ class Fuzzer:
                 self.constructs[const().sort].append(const)
 
         if settings.bv:
+            # breakpoint()
             from .bv.literal import BVLiteral
             from .bv import constructs as bv_constructs_module
             self.literals['bv'] += [BVLiteral]
@@ -103,6 +104,7 @@ class Fuzzer:
             self.actions += bv_constructs
             for const in bv_constructs:
                 self.constructs[const().sort].append(const)
+            # breakpoint()
             #raise NotImplementedError
 
         if settings.diff:
@@ -196,6 +198,7 @@ class Fuzzer:
 
     def mk_ast(self, depth, benchmark, sort='bool'):
         if depth == settings.depth:
+            # breakpoint()
             if sort == 'round' or sort == 'reg':
                 return random.choice(self.literals[sort])()
             opts = [random.choice(benchmark.vars(sort=sort)),

@@ -1,16 +1,21 @@
 from .node import Node
 
-class Benchmark:                ##return type of fuzzer.gen, fuzzer.mutate
+
+class Benchmark:  # return type of fuzzer.gen, fuzzer.mutate
     def __init__(self, logic):
         self.logic = logic       # i.e, (set-logic LOGIC)
         self.assertions = []    # List of asserting ASTNodes1
         self._vars = {}
 
-    def vars(self,sort=None): 
-        if sort: return self._vars[sort]
+    def vars(self, sort=None):
+        if sort == 'bv':
+            return self._vars['BitVec']
+        if sort:
+            return self._vars[sort]
         else:
             ret = []
-            for sort in self._vars: ret += self._vars[sort]
+            for sort in self._vars:
+                ret += self._vars[sort]
             return ret
 
     def add_var(self,var):

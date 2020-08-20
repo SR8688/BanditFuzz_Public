@@ -8,7 +8,7 @@ class BVLiteral:
         def rng(): return np.random.choice(['0', '1'])
         self.length = settings._bitveclen
         import numpy as np
-        self.sort = 'fp'
+        self.sort = 'bv'
 
         if settings._0b:
             self.length *= 1
