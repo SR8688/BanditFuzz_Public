@@ -172,7 +172,13 @@ class Fuzzer:
                 #     ))
 
         if settings.bv:
-            raise NotImplementedError
+            from .bv.variable import BV_Variable as BVVariable
+            width = settings._bitveclen
+            for _ in range(settings.vars):
+                if settings._0b:
+                    benchmark.add_var(BVVariable(f'bv_{_}', width*1))
+                elif settings._0x:
+                    benchmark.add_var(BVVariable(f'bv_{_}', width*4))
 
         if settings.integer or settings.strings:
             from .int.variable import IntVariable
@@ -203,7 +209,8 @@ class Fuzzer:
             )
         ret = Node(random.choice(self.constructs[sort])())
         for _ in range(ret.val.arity):
-            ret.children.append(self.mk_ast(depth=depth+1, benchmark=benchmark, sort=ret.val.sig[_]))
+            ret.children.append(self.mk_ast(
+                depth=depth+1, benchmark=benchmark, sort=ret.val.sig[_]))
         return ret
 
     def mutate(self, construct):

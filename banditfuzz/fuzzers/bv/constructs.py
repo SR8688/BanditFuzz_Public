@@ -2,8 +2,8 @@ class BVEXTRACT:  # extracts subvec
     def __init__(self):
         self.arity = 3
         self.sort = 'bv'
-        self.sig = ['Num',
-                    'Num',
+        self.sig = ['int',
+                    'int',
                     'bv',
                     'bv']
         self.chainable = False  # ?
