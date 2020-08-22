@@ -358,8 +358,12 @@ class BVUGT:
         return "bvugt"
     __repr__ = __str__
 
+# pylint: disable=too-few-public-methods
+
 
 class BVUGE:
+    """BV Unsigned greater than or equal to"""
+
     def __init__(self):
         self.arity = 2
         self.sort = 'bool'
