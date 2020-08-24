@@ -21,13 +21,14 @@ def trim_input(string):
     return remove_last_line_from_string(remove_last_line_from_string(string))
 
 
-def create_smt_file(config=(8, 5, 4, 5), verbose=False):
+def create_smt_file(config=(8, 5, 4, 5)):
+    """ Given banditfuzz config, generates and saves an SMT file"""
     width, depth, num_vars, num_ast = config
-    """ Given banditfuzz config, creates SMT input and returns filename """
-    if verbose:
+    if VERBOSE:
         print("Width: {0}\tDepth {1}\tNum vars: {2}\tNum ASTs: {3}".format(
             width, depth, num_vars, num_ast))
     # Build the banditfuzz command string
+    # Rewrite this security risk V
     cmd_bf = ['python', './bin/banditfuzz',
               '-d', str(depth),
               '-v', str(num_vars),
@@ -45,7 +46,7 @@ def create_smt_file(config=(8, 5, 4, 5), verbose=False):
     # Creates unique filename for input
     uuid_str = str(uuid.uuid4())
     filename = INPUT_DIR+"/{0}.smt2".format(uuid_str)
-    if verbose:
+    if VERBOSE:
         print("Input file: {0}".format(filename))
     # Write input to file
     with open(filename, 'w+b') as inp_file:
@@ -55,27 +56,30 @@ def create_smt_file(config=(8, 5, 4, 5), verbose=False):
 
 
 def fuzz_z3(infile):
+    """ Starts Z3 for multiprocessing """
     return fuzz_solver('z3', infile)
 
 
 def fuzz_cvc4(infile):
+    """ Starts CVC4 for multiprocessing """
     return fuzz_solver('cvc4', infile)
 
 
 def fuzz_boolector(infile):
+    """ Starts Boolector for multiprocessing """
     return fuzz_solver('boolector', infile)
 
 
 def fuzz_solver(solver, infile):
-
+    """ Runs a solver on an input file, returns run time and the output """
     if solver == 'z3':
         cmd = ['../runs/z3', infile]
     elif solver == 'cvc4':
         cmd = ['../runs/cvc4', '--lang', 'smt', infile]
     elif solver == 'boolector':
-        cmd = ['../runs/boolector',  infile]
+        cmd = ['../runs/boolector', infile]
     else:
-        cmd = 'error'
+        cmd = 'error in fuzz_solver (unhandled input)'
         assert 0
     try:
         t_start = time.time()
@@ -88,11 +92,13 @@ def fuzz_solver(solver, infile):
     except subprocess.TimeoutExpired:
         output = "timeout"
         runtime = INF
-    print("{0}:\t{1}".format(solver, output))
+    if VERBOSE:
+        print("{0}:\t{1}".format(solver, output))
     return [runtime, output]
 
 
 def get_sample_files():
+    """ Generates a sample of files """
     filenames = [os.path.join(INPUT_DIR, infile)
                  for infile in os.listdir(INPUT_DIR) if infile[-4:] == 'smt2']
     sample_files = sample(filenames, SAMPLE_SIZE)
@@ -100,111 +106,46 @@ def get_sample_files():
 
 
 def benchmark_solvers(sample_files):
+    """ Uses multiprocessing to run the solvers on the input sample"""
+    print("[*] With {0} workers".format(MAX_WORKERS))
+    print("[*] Sampling {0} files".format(SAMPLE_SIZE))
+    print("[*] Timeout {0}s".format(TIMEOUT))
 
+    print("[*] Starting Z3 benchmark")
     with multiprocessing.Pool(MAX_WORKERS) as pool_z3:
         outputs_z3 = pool_z3.map(fuzz_z3, sample_files)
 
+    print("[*] Starting CVC4 benchmark")
     with multiprocessing.Pool(MAX_WORKERS) as pool_cvc4:
         outputs_cvc4 = pool_cvc4.map(fuzz_cvc4, sample_files)
 
+    print("[*] Starting boolector benchmark")
     with multiprocessing.Pool(MAX_WORKERS) as pool_boolector:
         outputs_boolector = pool_boolector.map(fuzz_boolector, sample_files)
-
+    print("[*] Finished benchmarking solvers")
     outputs = np.array([outputs_z3, outputs_cvc4, outputs_boolector])
-    # breakpoint()
+
     return outputs
 
 
-def fuzz_expt(width, depth=5, num_vars=4, num_ast=5):
-    """ Creates an input and evaluates it on all solvers """
-    print("Width: {0}\tDepth {1}\tNum vars: {2}\tNum ASTs: {3}".format(
-        width, depth, num_vars, num_ast))
-    filename = create_smt_file(width, depth, num_vars, num_ast)
-    z3_output, z3_runtime = fuzz_solver('z3', filename)
-    cvc4_output, cvc4_runtime = fuzz_solver('cvc4', filename)
-    blctr_output, blctr_runtime = fuzz_solver('boolector', filename)
-    runtime_data = [width, depth, num_vars, num_ast,
-                    z3_runtime, cvc4_runtime, blctr_runtime]
-
-    if not z3_output == cvc4_output == blctr_output:
-        # If discrepancies in outputs
-        # Log it
-        log_str = "/*-----------------------------------------------------*/"
-        log_str += "\n Z3 {0}\t CVC4 {1}\t Boolector {2}\n".format(
-            z3_output, cvc4_output, blctr_output)
-        log_str += "INPUT: \n {0}\n".format(filename)
-        log_str += "/*----------------------------------------------------*/"
-        log_str += "\n"
-        with open(LOGFILE, 'a') as lgfile:
-            lgfile.write(log_str)
-
-        # If we have SAT and unSAT: big problem!
-        solver_outputs = [z3_output, cvc4_output, blctr_output]
-        if 'sat' in solver_outputs and 'unsat' in solver_outputs:
-            with open(INCONSISTENCIES, 'a') as inconfile:
-                inconfile.write(log_str)
-    else:
-        print("Finished this round")
-
-    return runtime_data
-
-
-def create_smt_benchmarks():
-    # breakpoint()
+def create_benchmark_files():
+    """ Creates a set of files for benchmarking """
     widths = range(MIN_WIDTH, MAX_WIDTH+1)
     depths = range(MIN_DEPTH, MAX_DEPTH+1)
     numvars = range(MIN_NUMVARS, MAX_NUMVARS+1)
     numasts = range(MIN_NUMASTS, MAX_NUMASTS+1)
 
-    configuration_space = itertools.product(widths,
-                                            depths,
-                                            numvars,
-                                            numasts)
-
+    cfg_space = itertools.product(widths,
+                                  depths,
+                                  numvars,
+                                  numasts)
+    print("[*] Creating {0} .smt2 files".format(widths*depths*numvars*numasts))
+    print("[*] With {0} processes".format(MAX_WORKERS))
     with multiprocessing.Pool(MAX_WORKERS) as pool:
         filename_list = pool.map(
-            create_smt_file, [el for el in configuration_space])
+            create_smt_file, [cfg for cfg in cfg_space])
 
     return filename_list
-
-
-def performance_plots(input_data, variable):
-    """ Creates cactus plot of experiments """
-    runtime_data = np.array(input_data)
-
-    if variable == 'width':
-        var_xlabel = "Bitvector Width"
-        var_idx = 0
-    elif variable == 'depth':
-        var_xlabel = "Asserting AST depth"
-        var_idx = 1
-    elif variable == 'numvars':
-        var_xlabel = "Number of Bitvector Variables"
-        var_idx = 2
-    elif variable == 'numasts':
-        var_xlabel = "Number of asserting ASTs"
-        var_idx = 3
-    else:
-        var_idx = -1
-        var_xlabel = "ERROR"
-        assert 0
-
-    var_data = runtime_data[:, var_idx]
-    z3_times = runtime_data[:, 4]
-    cvc4_times = runtime_data[:, 5]
-    boolector_times = runtime_data[:, 6]
-
-    plt.plot(var_data, z3_times, label="Z3")
-    plt.plot(var_data, cvc4_times, label="CVC4")
-    plt.plot(var_data, boolector_times, label="Boolector")
-    plt.title("Cactus Plot of Solver Performance")
-    plt.xlabel(var_xlabel)
-    plt.ylabel("Runtime")
-
-    plt.xlim(min(var_data), max(var_data))
-    plt.ylim(0, TIMEOUT)
-    plt.legend()
-    plt.show()
 
 
 def log_interesting_behaviour(solver_data):
@@ -237,64 +178,70 @@ def log_interesting_behaviour(solver_data):
             lgfile.write(log_str+'/n')
 
 
+def show_cactus_plot(solver_times):
+    time_intervals = np.logspace(-4, np.log10(TIMEOUT), 1000)
+    solver_labels = ['Z3', 'CVC4', 'Boolector']
+    for idx, solver_times in enumerate(solver_times):
+        n_solver = [solver_times[solver_times < interval].size
+                    for interval in time_intervals]
+        plt.plot(time_intervals, n_solver, label=solver_labels[idx])
+
+    matplotlib.rcParams.update({'font.size': 22})
+    matplotlib.rc('xtick', labelsize=16)
+    matplotlib.rc('ytick', labelsize=16)
+    plt.title("Solver Survival with BanditFuzz (i9 9900K: {0} threads)".format(
+        MAX_WORKERS))
+    plt.xscale('log')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Instances Solved')
+    plt.legend()
+    plt.grid()
+    plt.tight_layout()
+    plt.show()
+
+
+def drop_timeouts_and_sort(solver_data):
+
+    sorted_no_timeouts = np.sort(solver_data[solver_data[:, 1] != 'timeout'],
+                                 axis=0)[:, 0]
+
+    return sorted_no_timeouts.astype('float')
+
+
 INPUT_DIR = "./inputs/cactus"
 LOGFILE = INPUT_DIR+"/runlogs.txt"
 INCONSISTENCIES = INPUT_DIR+"/incons.txt"
+VERBOSE = False
 
 INF = 1000000
 
-TIMEOUT = 20
-MAX_WORKERS = 8
-SAMPLE_SIZE = 6
-MIN_WIDTH, MAX_WIDTH = (1, 64)
+TIMEOUT = 30
+MAX_WORKERS = 10  # Make the 9900K sweat
+SAMPLE_SIZE = 600  # How many files to run solvers on
+
+MIN_WIDTH, MAX_WIDTH = (1, 64)  # for benchmark file creation
 MIN_DEPTH, MAX_DEPTH = (1, 10)
 MIN_NUMVARS, MAX_NUMVARS = (1, 10)
 MIN_NUMASTS, MAX_NUMASTS = (1, 10)
 
-file_list = get_sample_files()
-benchmark_data = benchmark_solvers(file_list)
-# log_interesting_behaviour(benchmark_data)
-z3_data, cvc4_data, bltr_data = benchmark_data
-z3_times = np.sort(z3_data[z3_data[:, 1] != 'timeout'], axis=0)[
-    :, 0].astype('float')
-cvc4_times = np.sort(cvc4_data[cvc4_data[:, 1] != 'timeout'], axis=0)[
-    :, 0].astype('float')
-bltr_times = np.sort(bltr_data[bltr_data[:, 1] != 'timeout'], axis=0)[
-    :, 0].astype('float')
 
-time_intervals = np.logspace(-4, np.log10(TIMEOUT), 1000)
-n_z3 = [z3_times[z3_times < interval].size
-        for interval in time_intervals]
-n_cvc4 = [cvc4_times[cvc4_times < interval].size
-          for interval in time_intervals]
-n_bltr = [bltr_times[bltr_times < interval].size
-          for interval in time_intervals]
-matplotlib.rcParams.update({'font.size': 22})
-matplotlib.rc('xtick', labelsize=16)
-matplotlib.rc('ytick', labelsize=16)
-plt.title("Cactus/Survival plot of SMT Solvers with BanditFuzz input")
-plt.plot(time_intervals, n_z3, label='Z3')
-plt.plot(time_intervals, n_cvc4, label='CVC4')
-plt.plot(time_intervals, n_bltr, label='Boolector')
-plt.xscale('log')
-plt.xlabel('Time (s)')
-plt.ylabel('Instances Solved')
-plt.legend()
-plt.grid()
-plt.tight_layout()
-plt.show()
+def main(gen_input_files=False):
+    if gen_input_files:
+        create_benchmark_files()  # generate input files
+
+    file_list = get_sample_files()  # get a sample of the files
+    benchmark_data = benchmark_solvers(file_list)  # benchmark solvers
+    # get any interesting behaviour
+    log_interesting_behaviour(benchmark_data)
+
+    z3_data, cvc4_data, bltr_data = benchmark_data
+
+    z3_times = drop_timeouts_and_sort(z3_data)
+    cvc4_times = drop_timeouts_and_sort(cvc4_data)
+    bltr_times = drop_timeouts_and_sort(bltr_data)
+
+    show_cactus_plot([z3_times, cvc4_times, bltr_times])
 
 
-# z3_data.drop
-
-# create_smt_benchmarks()
-
-# widths = range(MIN_WIDTH, MAX_WIDTH+1)
-# depths = range(MIN_DEPTH, MAX_DEPTH+1)
-# numvars = range(MIN_NUMVARS, MAX_NUMVARS+1)
-# numasts = range(MIN_NUMASTS, MAX_NUMASTS+1)
-
-# width_data = [fuzz_expt(width=w, depth=8,  num_ast=15, num_vars=6)
-#               for w in widths]
-
-# performance_plots(width_data, 'width')
+if __name__ == '__main__':
+    main()
