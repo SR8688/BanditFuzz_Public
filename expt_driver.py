@@ -214,14 +214,14 @@ LOGFILE = INPUT_DIR+"/runlogs.txt"
 INCONSISTENCIES = INPUT_DIR+"/incons.txt"
 VERBOSE = False
 
-TIMEOUT = 1
-MAX_WORKERS = 16  # Make the 9900K sweat
-SAMPLE_SIZE = 6  # How many files to run solvers on
+TIMEOUT = 30
+MAX_WORKERS = 10  # Make the 9900K sweat
+SAMPLE_SIZE = 600  # How many files to run solvers on
 
-MIN_WIDTH, MAX_WIDTH = (1, 4)  # for benchmark file creation
-MIN_DEPTH, MAX_DEPTH = (1, 2)
-MIN_NUMVARS, MAX_NUMVARS = (1, 2)
-MIN_NUMASTS, MAX_NUMASTS = (1, 2)
+MIN_WIDTH, MAX_WIDTH = (1, 64)  # for benchmark file creation
+MIN_DEPTH, MAX_DEPTH = (1, 10)
+MIN_NUMVARS, MAX_NUMVARS = (1, 10)
+MIN_NUMASTS, MAX_NUMASTS = (1, 10)
 ###############################################################################
 
 
