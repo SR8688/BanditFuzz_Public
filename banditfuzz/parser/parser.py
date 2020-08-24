@@ -7,7 +7,7 @@ parser.add_argument("-t", "--target-solvers",
                     metavar="target_solvers[,target_solvers...]",
                     action="store",
                     dest="target_solvers",
-                    default=[],
+                    default=None,
                     nargs='+',
                     help="The target SMT Solvers in the banditfuzz loop."
                     )
@@ -16,7 +16,7 @@ parser.add_argument("-ban", "--banned-constructs",
                     metavar="ban[,ban...]",
                     action="store",
                     dest="ban",
-                    default=[],
+                    default=None,
                     nargs='+',
                     help="The target SMT Solvers in the banditfuzz loop."
                     )
@@ -25,7 +25,7 @@ parser.add_argument("-r", "--reference-solvers",
                     metavar="reference_solvers[,reference_solvers...]",
                     action="store",
                     dest="reference_solvers",
-                    default=[],
+                    default=None,
                     nargs='+',
                     help="The reference SMT Solvers in the banditfuzz loop."
                     )
@@ -61,7 +61,7 @@ parser.add_argument("-d", "-depth",
                     metavar="depth",
                     action="store",
                     dest="depth",
-                    default=3,
+                    default=5,
                     type=int,
                     help="depth of each asserting AST"
                     )
@@ -212,6 +212,27 @@ parser.add_argument('-256', '--256',
                     help="Generate benchmarks with width 256"
                     )
 
+parser.add_argument('-0b', '--0b',
+                    action='store_true',
+                    dest="_0b",
+                    help="Generate binary bitvectors"
+                    )
+
+parser.add_argument('-0x', '--0x',
+                    action='store_true',
+                    dest="_0x",
+                    help="Generate hexadecimal bitvectors"
+                    )
+
+parser.add_argument("-bvw", "-bitvecwidth",
+                    metavar="bitvecwidth",
+                    action="store",
+                    dest="_bitveclen",
+                    default=16,
+                    type=int,
+                    help="width of the bitvector"
+                    )
+
 # parser.add_argument('-randbit', '--random-bit-lengths',
 #                     action='store_true',
 #                     dest="rand_bit_len",
@@ -222,3 +243,5 @@ parser.add_argument('-256', '--256',
 args = parser.parse_args()
 if not(args._8 or args._16 or args._32 or args._64 or args._128 or args._256):
     args._32 = True
+if not(args._0b or args._0x):
+    args._0b = True

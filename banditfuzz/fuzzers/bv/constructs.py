@@ -1,42 +1,47 @@
-class BVEXTRACT:  # extracts subvec
-    def __init__(self):
-        self.arity = 3
-        self.sort = 'bv'
-        self.sig = ['Num',
-                    'Num',
-                    'bv',
-                    'bv']
-        self.chainable = False  # ?
 
-    def __str__(self):
-        return "bv.extract"
-    __repr__ = __str__
+# class BVEXTRACT:  # extracts subvec
+#     def __init__(self):
+#         self.arity = 3
+#         self.sort = 'bv'
+#         self.type = 'bv'
+#         self.sig = ['int',
+#                     'int',
+#                     'bv',
+#                     'bv']
+#         self.chainable = False  # ?
+
+#     def __str__(self):
+#         return "bvextract"
+#     __repr__ = __str__
 
 
-class BVCONCAT:
-    def __init__(self):
-        self.arity = 2
-        self.sort = 'bv'
-        self.sig = ['bv',
-                    'bv',
-                    'bv']
-        self.chainable = False  # ?
+# class BVCONCAT:
+#     def __init__(self):
+#         self.arity = 2
+#         self.sort = 'bv'
+#         self.type = 'bv'
+#         self.sig = ['bv',
+#                     'bv',
+#                     'bv']
+#         self.chainable = False  # ?
 
-    def __str__(self):
-        return "bv.concat"
-    __repr__ = __str__
+#     def __str__(self):
+#         return "bvconcat"
+#     __repr__ = __str__
 
 
 class BVNOT:
     def __init__(self):
         self.arity = 1
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.not"
+        return "bvnot"
+
     __repr__ = __str__
 
 
@@ -44,13 +49,15 @@ class BVAND:
     def __init__(self):
         self.arity = 2
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.and"
+        return "bvand"
+
     __repr__ = __str__
 
 
@@ -58,13 +65,14 @@ class BVOR:
     def __init__(self):
         self.arity = 2
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.or"
+        return "bvor"
     __repr__ = __str__
 
 
@@ -72,12 +80,13 @@ class BVNEG:
     def __init__(self):
         self.arity = 1
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.neg"
+        return "bvneg"
     __repr__ = __str__
 
 
@@ -85,13 +94,14 @@ class BVADD:
     def __init__(self):
         self.arity = 2
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.add"
+        return "bvadd"
     __repr__ = __str__
 
 
@@ -99,13 +109,14 @@ class BVMUL:
     def __init__(self):
         self.arity = 2
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.mul"
+        return "bvmul"
     __repr__ = __str__
 
 
@@ -113,13 +124,14 @@ class BVUDIV:
     def __init__(self):
         self.arity = 2
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.udiv"
+        return "bvudiv"
     __repr__ = __str__
 
 
@@ -127,13 +139,15 @@ class BVUREM:
     def __init__(self):
         self.arity = 2
         self.sort = 'bv'
+        self.type = 'bv'
         self.sig = ['bv',
                     'bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.urem"
+        return "bvurem"
+
     __repr__ = __str__
 
 
@@ -141,28 +155,31 @@ class BVSHL:
     def __init__(self):
         self.arity = 2
         self.sort = 'bv'
+        self.type = 'bv'
+
         self.sig = ['bv',
                     'bv',
                     'bv']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.shl"
+        return "bvshl"
     __repr__ = __str__
 
 
-class BVSHR:
-    def __init__(self):
-        self.arity = 2
-        self.sort = 'bv'
-        self.sig = ['bv',
-                    'bv',
-                    'bv']
-        self.chainable = False  # ?
+# class BVSHR:
+#     def __init__(self):
+#         self.arity = 2
+#         self.sort = 'bv'
+#         self.type = 'bv'
+#         self.sig = ['bv',
+#                     'bv',
+#                     'bv']
+#         self.chainable = False  # ?
 
-    def __str__(self):
-        return "bv.shr"
-    __repr__ = __str__
+#     def __str__(self):
+#         return "bvshr"
+#     __repr__ = __str__
 
 
 class BVULT:
@@ -175,7 +192,7 @@ class BVULT:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.ult"
+        return "bvult"
     __repr__ = __str__
 
 
@@ -189,7 +206,7 @@ class BVNAND:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.nand"
+        return "bvnand"
     __repr__ = __str__
 
 
@@ -203,7 +220,7 @@ class BVNOR:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.nor"
+        return "bvnor"
     __repr__ = __str__
 
 
@@ -217,7 +234,7 @@ class BVXOR:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.xor"
+        return "bvxor"
     __repr__ = __str__
 
 
@@ -231,7 +248,7 @@ class BVXNOR:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.xnor"
+        return "bvxnor"
     __repr__ = __str__
 
 
@@ -245,7 +262,7 @@ class BVSUB:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.sub"
+        return "bvsub"
     __repr__ = __str__
 
 
@@ -259,7 +276,7 @@ class BVSDIV:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.sdiv"
+        return "bvsdiv"
     __repr__ = __str__
 
 
@@ -273,22 +290,22 @@ class BVSREM:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.srem"
+        return "bvsrem"
     __repr__ = __str__
 
 
-class BVSMOD:
-    def __init__(self):
-        self.arity = 2
-        self.sort = 'bv'
-        self.sig = ['bv',
-                    'bv',
-                    'bv']
-        self.chainable = False  # ?
+# class BVSMOD:
+#     def __init__(self):
+#         self.arity = 2
+#         self.sort = 'bv'
+#         self.sig = ['bv',
+#                     'bv',
+#                     'bv']
+#         self.chainable = False  # ?
 
-    def __str__(self):
-        return "bv.smod"
-    __repr__ = __str__
+#     def __str__(self):
+#         return "bvsmod"
+#     __repr__ = __str__
 
 
 class BVASHR:
@@ -301,19 +318,121 @@ class BVASHR:
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.ashr"
+        return "bvashr"
     __repr__ = __str__
 
 
-class BVCOMP:
+# class BVCOMP:
+#     def __init__(self):
+#         self.arity = 2
+#         self.sort = 'bv'
+#         self.sig = ['bv',
+#                     'bv',
+#                     'bv']  # rets |bv|=1 (bool)
+#         self.chainable = False  # ?
+
+#     def __str__(self):
+#         return "bvcomp"
+#     __repr__ = __str__
+
+
+class BVULE:
     def __init__(self):
         self.arity = 2
-        self.sort = 'bv'
+        self.sort = 'bool'
         self.sig = ['bv',
                     'bv',
-                    'bv']  # rets |bv|=1 (bool)
+                    'bool']
         self.chainable = False  # ?
 
     def __str__(self):
-        return "bv.comp"
+        return "bvule"
+    __repr__ = __str__
+
+
+class BVUGT:
+    def __init__(self):
+        self.arity = 2
+        self.sort = 'bool'
+        self.sig = ['bv',
+                    'bv',
+                    'bool']
+        self.chainable = False  # ?
+
+    def __str__(self):
+        return "bvugt"
+    __repr__ = __str__
+
+# pylint: disable=too-few-public-methods
+
+
+class BVUGE:
+    """BV Unsigned greater than or equal to"""
+
+    def __init__(self):
+        self.arity = 2
+        self.sort = 'bool'
+        self.sig = ['bv',
+                    'bv',
+                    'bool']
+        self.chainable = False  # ?
+
+    def __str__(self):
+        return "bvuge"
+    __repr__ = __str__
+
+
+class BVSLT:
+    def __init__(self):
+        self.arity = 2
+        self.sort = 'bool'
+        self.sig = ['bv',
+                    'bv',
+                    'bool']
+        self.chainable = False  # ?
+
+    def __str__(self):
+        return "bvslt"
+    __repr__ = __str__
+
+
+class BVSLE:
+    def __init__(self):
+        self.arity = 2
+        self.sort = 'bool'
+        self.sig = ['bv',
+                    'bv',
+                    'bool']
+        self.chainable = False  # ?
+
+    def __str__(self):
+        return "bvsle"
+    __repr__ = __str__
+
+
+class BVSGT:
+    def __init__(self):
+        self.arity = 2
+        self.sort = 'bool'
+        self.sig = ['bv',
+                    'bv',
+                    'bool']
+        self.chainable = False  # ?
+
+    def __str__(self):
+        return "bvsgt"
+    __repr__ = __str__
+
+
+class BVSGE:
+    def __init__(self):
+        self.arity = 2
+        self.sort = 'bool'
+        self.sig = ['bv',
+                    'bv',
+                    'bool']
+        self.chainable = False  # ?
+
+    def __str__(self):
+        return "bvsge"
     __repr__ = __str__

@@ -6,7 +6,6 @@ from sklearn.preprocessing import normalize as norm
 import inspect
 import pdb
 import random
-import copy
 import numpy as np
 
 
@@ -95,7 +94,19 @@ class Fuzzer:
                 self.constructs[const().sort].append(const)
 
         if settings.bv:
-            raise NotImplementedError
+            # breakpoint()
+            from .bv.literal import BVLiteral
+            from .bv import constructs as bv_constructs_module
+            self.literals['bv'] += [BVLiteral]
+
+            self.logic += 'BV'
+            bv_constructs = [o[1] for o in inspect.getmembers(
+                bv_constructs_module) if inspect.isclass(o[1])]
+            self.actions += bv_constructs
+            for const in bv_constructs:
+                self.constructs[const().sort].append(const)
+            # breakpoint()
+            #raise NotImplementedError
 
         if settings.diff:
             raise NotImplementedError
@@ -112,18 +123,13 @@ class Fuzzer:
         if settings.real:
             raise NotImplementedError
 
-        for ban_op in settings.ban:
-            found = False
-            for sort in self.constructs:
-                for it, op in enumerate(self.constructs[sort]):
-                    if str(op()) == ban_op:
-                        found = True
-                        break
-                if found:
-                    break
-            if not found:
-                die("Could not find input operator: ", ban_op)
-            del self.constructs[sort][it]
+        for sort in self.constructs:
+            rm = []
+            for op in self.constructs[sort]:
+                if str(op()) in settings.ban:
+                    rm.append(op)
+            for op in rm:
+                pdb.set_trace()
 
     def gen(self):
         benchmark = Benchmark(logic=self.logic)
@@ -169,7 +175,13 @@ class Fuzzer:
                 #     ))
 
         if settings.bv:
-            raise NotImplementedError
+            from .bv.variable import BV_Variable as BVVariable
+            width = settings._bitveclen
+            for _ in range(settings.vars):
+                if settings._0b:
+                    benchmark.add_var(BVVariable(f'bv_{_}', width*1))
+                elif settings._0x:
+                    benchmark.add_var(BVVariable(f'bv_{_}', width*4))
 
         if settings.integer or settings.strings:
             from .int.variable import IntVariable
@@ -186,8 +198,9 @@ class Fuzzer:
 
     def mk_ast(self, depth, benchmark, sort='bool'):
         if depth == settings.depth:
+            # breakpoint()
             if sort == 'round' or sort == 'reg':
-                return Node(random.choice(self.literals[sort])())
+                return random.choice(self.literals[sort])()
             opts = [random.choice(benchmark.vars(sort=sort)),
                     random.choice(self.literals[sort])()]
             odds = [1,                                           1]

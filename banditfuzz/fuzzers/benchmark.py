@@ -9,6 +9,8 @@ class Benchmark:  # return type of fuzzer.gen, fuzzer.mutate
         self.solver_data = {}
 
     def vars(self, sort=None):
+        if sort == 'bv':
+            return self._vars['BitVec']
         if sort:
             return self._vars[sort]
         else:

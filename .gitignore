@@ -1,3 +1,7 @@
 venv*
 *banditfuzz.egg-inf*
 *__pycache__*
+banditfuzz/stringfuzz/
+cvc4
+*.png
+z3
