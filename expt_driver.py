@@ -148,7 +148,7 @@ def create_benchmark_files():
     return filename_list
 
 
-def log_interesting_behaviour(solver_data):
+def log_interesting_behaviour(solver_data, file_list):
     z3_d, cvc4_d, bltr_d = solver_data
     agree = np.logical_and(z3_d[:, 1] == cvc4_d[:, 1],
                            z3_d[:, 1] == bltr_d[:, 1])
@@ -215,9 +215,9 @@ VERBOSE = False
 
 INF = 1000000
 
-TIMEOUT = 30
+TIMEOUT = 2
 MAX_WORKERS = 10  # Make the 9900K sweat
-SAMPLE_SIZE = 600  # How many files to run solvers on
+SAMPLE_SIZE = 6  # How many files to run solvers on
 
 MIN_WIDTH, MAX_WIDTH = (1, 64)  # for benchmark file creation
 MIN_DEPTH, MAX_DEPTH = (1, 10)
@@ -232,7 +232,7 @@ def main(gen_input_files=False):
     file_list = get_sample_files()  # get a sample of the files
     benchmark_data = benchmark_solvers(file_list)  # benchmark solvers
     # get any interesting behaviour
-    log_interesting_behaviour(benchmark_data)
+    log_interesting_behaviour(benchmark_data, file_list)
 
     z3_data, cvc4_data, bltr_data = benchmark_data
 
