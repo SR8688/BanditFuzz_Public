@@ -17,3 +17,14 @@ When done: `deactivate`
 In the above example, the `run.sh` script, takes one command line argument, the name of the smt2 input to be solved, and runs the solver on that input, and prints the result to stdout. 
 
 `QF_S,QF_FP` are supported.
+
+# Benchmarking
+Update the configuration settings in `expt_driver.py`
+INPUT\_DIR: a directory containing .smt2 input files
+MAX\_WORKERS: Max processes available in pool
+TIMEOUT: in seconds
+SAMPLE\_SIZE: less than the number of input files
+Then run
+```
+python ./expt_driver.py
+```
