@@ -91,7 +91,7 @@ def fuzz_solver(solver, infile):
         runtime = t_end - t_start
     except subprocess.TimeoutExpired:
         output = "timeout"
-        runtime = INF
+        runtime = -1
     if VERBOSE:
         print("{0}:\t{1}".format(solver, output))
     return [runtime, output]
@@ -134,25 +134,24 @@ def create_benchmark_files():
     depths = range(MIN_DEPTH, MAX_DEPTH+1)
     numvars = range(MIN_NUMVARS, MAX_NUMVARS+1)
     numasts = range(MIN_NUMASTS, MAX_NUMASTS+1)
+    n_combos = len(widths)*len(depths)*len(numvars)*len(numasts)
 
     cfg_space = itertools.product(widths,
                                   depths,
                                   numvars,
                                   numasts)
-    print("[*] Creating {0} .smt2 files".format(widths*depths*numvars*numasts))
+    print("[*] Creating {0} .smt2 files".format(n_combos))
     print("[*] With {0} processes".format(MAX_WORKERS))
     with multiprocessing.Pool(MAX_WORKERS) as pool:
-        filename_list = pool.map(
-            create_smt_file, [cfg for cfg in cfg_space])
-
+        filename_list = pool.map(create_smt_file, cfg_space)
     return filename_list
 
 
-def log_interesting_behaviour(solver_data):
+def log_interesting_behaviour(solver_data, file_list):
+    """ Logs satisfiability error in one file, everything in another """
     z3_d, cvc4_d, bltr_d = solver_data
-    agree = np.logical_and(z3_d[:, 1] == cvc4_d[:, 1],
-                           z3_d[:, 1] == bltr_d[:, 1])
-    disagree = np.logical_not(agree)
+    disagree = np.logical_not(np.logical_and(z3_d[:, 1] == cvc4_d[:, 1],
+                                             z3_d[:, 1] == bltr_d[:, 1]))
     # values = z3_d[disagree]
     conflicts = solver_data[:, disagree, 1]
     conflict_files = np.array(file_list)[disagree]
@@ -162,11 +161,10 @@ def log_interesting_behaviour(solver_data):
                                     for idx in range(conflict_idxs)]):
         z3_o, cvc4_o, blctr_o = soln_set
         fault_file = conflict_files[idx]
-        log_dict = {"z3": z3_o,
-                    "cvc4": cvc4_o,
-                    "blctr": blctr_o,
-                    "filename": fault_file}
-        log_str = json.dumps(log_dict)
+        log_str = json.dumps({"z3": z3_o,
+                              "cvc4": cvc4_o,
+                              "blctr": blctr_o,
+                              "filename": fault_file})
 
         # If discrepancies in outputs
         # Log it
@@ -179,16 +177,14 @@ def log_interesting_behaviour(solver_data):
 
 
 def show_cactus_plot(solver_times):
+    """ Creates cactus plot given 3 solver input time series """
     time_intervals = np.logspace(-4, np.log10(TIMEOUT), 1000)
     solver_labels = ['Z3', 'CVC4', 'Boolector']
-    for idx, solver_times in enumerate(solver_times):
-        n_solver = [solver_times[solver_times < interval].size
+    for idx, t_solver in enumerate(solver_times):
+        n_solver = [t_solver[t_solver < interval].size
                     for interval in time_intervals]
         plt.plot(time_intervals, n_solver, label=solver_labels[idx])
 
-    matplotlib.rcParams.update({'font.size': 22})
-    matplotlib.rc('xtick', labelsize=16)
-    matplotlib.rc('ytick', labelsize=16)
     plt.title("Solver Survival with BanditFuzz (i9 9900K: {0} threads)".format(
         MAX_WORKERS))
     plt.xscale('log')
@@ -201,38 +197,47 @@ def show_cactus_plot(solver_times):
 
 
 def drop_timeouts_and_sort(solver_data):
-
+    """ Removes timeouts and sorts by time given solver output data """
     sorted_no_timeouts = np.sort(solver_data[solver_data[:, 1] != 'timeout'],
                                  axis=0)[:, 0]
 
     return sorted_no_timeouts.astype('float')
 
 
+# ##############               CONFIGURATION               ####################
+matplotlib.rcParams.update({'font.size': 22})
+matplotlib.rc('xtick', labelsize=16)
+matplotlib.rc('ytick', labelsize=16)
+
 INPUT_DIR = "./inputs/cactus"
 LOGFILE = INPUT_DIR+"/runlogs.txt"
 INCONSISTENCIES = INPUT_DIR+"/incons.txt"
 VERBOSE = False
 
-INF = 1000000
+TIMEOUT = 1
+MAX_WORKERS = 16  # Make the 9900K sweat
+SAMPLE_SIZE = 6  # How many files to run solvers on
 
-TIMEOUT = 30
-MAX_WORKERS = 10  # Make the 9900K sweat
-SAMPLE_SIZE = 600  # How many files to run solvers on
-
-MIN_WIDTH, MAX_WIDTH = (1, 64)  # for benchmark file creation
-MIN_DEPTH, MAX_DEPTH = (1, 10)
-MIN_NUMVARS, MAX_NUMVARS = (1, 10)
-MIN_NUMASTS, MAX_NUMASTS = (1, 10)
+MIN_WIDTH, MAX_WIDTH = (1, 4)  # for benchmark file creation
+MIN_DEPTH, MAX_DEPTH = (1, 2)
+MIN_NUMVARS, MAX_NUMVARS = (1, 2)
+MIN_NUMASTS, MAX_NUMASTS = (1, 2)
+###############################################################################
 
 
 def main(gen_input_files=False):
+    """ Creates smt2 input files and places into input directory if arg is True, then runs solvers on a sample of the files in input dir """
+    if not os.path.isdir(INPUT_DIR):
+        print("[!] Please create {0} and run again".format(
+            INPUT_DIR), flush=True)
+        raise NotImplementedError
     if gen_input_files:
         create_benchmark_files()  # generate input files
 
     file_list = get_sample_files()  # get a sample of the files
     benchmark_data = benchmark_solvers(file_list)  # benchmark solvers
     # get any interesting behaviour
-    log_interesting_behaviour(benchmark_data)
+    log_interesting_behaviour(benchmark_data, file_list)
 
     z3_data, cvc4_data, bltr_data = benchmark_data
 
@@ -244,4 +249,4 @@ def main(gen_input_files=False):
 
 
 if __name__ == '__main__':
-    main()
+    main(gen_input_files=False)
