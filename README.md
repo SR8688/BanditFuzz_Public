@@ -24,7 +24,28 @@ INPUT\_DIR: a directory containing .smt2 input files
 MAX\_WORKERS: Max processes available in pool  
 TIMEOUT: in seconds  
 SAMPLE\_SIZE: less than the number of input files  
-Then run:
+Z3\_BIN, CVC4\_BIN, BOOLECTOR_BIN : ./path/to/solver  
+
+Then run from the root dir:
 ```
+source venv/bin/activate
 python ./expt_driver.py
+deactivate
+```
+Any timeouts, etc will be logged to LOGFILE  
+Any contradicting SAT results will be logged to INCONSISTENCIES  
+
+If any of the required libraries are missing from your venv, `pip install` them.
+```
+matplotlib
+multiprocessing
+itertools
+subprocess
+json
+os
+uuid
+time
+matplotlib.pyplot as plt
+numpy as np
+random.sample
 ```

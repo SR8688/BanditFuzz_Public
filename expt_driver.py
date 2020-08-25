@@ -73,11 +73,11 @@ def fuzz_boolector(infile):
 def fuzz_solver(solver, infile):
     """ Runs a solver on an input file, returns run time and the output """
     if solver == 'z3':
-        cmd = ['../runs/z3', infile]
+        cmd = [Z3_BIN, infile]
     elif solver == 'cvc4':
-        cmd = ['../runs/cvc4', '--lang', 'smt', infile]
+        cmd = [CVC4_BIN, '--lang', 'smt', infile]
     elif solver == 'boolector':
-        cmd = ['../runs/boolector', infile]
+        cmd = [BOOLECTOR_BIN, infile]
     else:
         cmd = 'error in fuzz_solver (unhandled input)'
         assert 0
@@ -107,6 +107,18 @@ def get_sample_files():
 
 def benchmark_solvers(sample_files):
     """ Uses multiprocessing to run the solvers on the input sample"""
+    if not os.path.isfile(Z3_BIN):
+        print("[!] Please make Z3_BIN point at the Z3 binary",
+              flush=True)
+        raise NotImplementedError
+    if not os.path.isfile(CVC4_BIN):
+        print("[!] Please make CVC4_BIN point at the CVC4 binary",
+              flush=True)
+        raise NotImplementedError
+    if not os.path.isfile(BOOLECTOR_BIN):
+        print("[!] Please make BOOLECTOR_BIN point at the Boolector binary",
+              flush=True)
+        raise NotImplementedError
     print("[*] With {0} workers".format(MAX_WORKERS))
     print("[*] Sampling {0} files".format(SAMPLE_SIZE))
     print("[*] Timeout {0}s".format(TIMEOUT))
@@ -119,7 +131,7 @@ def benchmark_solvers(sample_files):
     with multiprocessing.Pool(MAX_WORKERS) as pool_cvc4:
         outputs_cvc4 = pool_cvc4.map(fuzz_cvc4, sample_files)
 
-    print("[*] Starting boolector benchmark")
+    print("[*] Starting Boolector benchmark")
     with multiprocessing.Pool(MAX_WORKERS) as pool_boolector:
         outputs_boolector = pool_boolector.map(fuzz_boolector, sample_files)
     print("[*] Finished benchmarking solvers")
@@ -213,6 +225,10 @@ INPUT_DIR = "./inputs/cactus"
 LOGFILE = INPUT_DIR+"/runlogs.txt"
 INCONSISTENCIES = INPUT_DIR+"/incons.txt"
 VERBOSE = False
+
+Z3_BIN = "../runs/z3"
+CVC4_BIN = "../runs/cvc4"
+BOOLECTOR_BIN = "../runs/boolector"
 
 TIMEOUT = 5
 MAX_WORKERS = 2  # Make the 9900K sweat
