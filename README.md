@@ -28,7 +28,7 @@ Any contradicting SAT results will be logged to INCONSISTENCIES
 
 With DEFAULT configuration settings in `expt_driver.py`, Banditfuzz should generate the following graph.
 
-<img src="im/im1.png"
+<img src="images/im1.png"
      alt="Markdown Monster icon"
      style="float: left; margin-right: 10px;" />
 
