@@ -39,7 +39,10 @@ source venv/bin/activate
 
 ## Install Banditfuzz
 python3 setup.py develop
+pip3 install sklearn
 pip3 install numpy
+pip3 install matplotlib
+apt-get install python3-tk -y
 
 # Install Stringfuzz within banditfuzz.
 cd banditfuzz

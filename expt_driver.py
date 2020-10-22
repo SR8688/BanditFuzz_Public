@@ -36,9 +36,9 @@ def create_smt_file(config=(8, 5, 4, 5)):
               '-bv', '-bvw', str(width),  # bitvec + width
               '-ban', 'None',  # no banned commands
               '-t',
-              '../runs/cvc4',
-              '../runs/z3',
-              '../runs/boolector']  # target solvers
+              './runs/cvc4',
+              './runs/z3',
+              './runs/boolector']  # target solvers
     # Get the solver input
     banditfuzz_out = subprocess.run(cmd_bf,
                                     capture_output=True, check=True).stdout
@@ -226,27 +226,28 @@ LOGFILE = INPUT_DIR+"/runlogs.txt"
 INCONSISTENCIES = INPUT_DIR+"/incons.txt"
 VERBOSE = False
 
-Z3_BIN = "../runs/z3"
-CVC4_BIN = "../runs/cvc4"
-BOOLECTOR_BIN = "../runs/boolector"
+Z3_BIN = "./runs/z3"
+CVC4_BIN = "./runs/cvc4"
+BOOLECTOR_BIN = "./runs/boolector"
 
 TIMEOUT = 5
 MAX_WORKERS = 2  # Make the 9900K sweat
 SAMPLE_SIZE = 10  # How many files to run solvers on
 
-MIN_WIDTH, MAX_WIDTH = (1, 64)  # for benchmark file creation
-MIN_DEPTH, MAX_DEPTH = (1, 10)
-MIN_NUMVARS, MAX_NUMVARS = (1, 10)
-MIN_NUMASTS, MAX_NUMASTS = (1, 10)
+MIN_WIDTH, MAX_WIDTH = (1, 8)  # for benchmark file creation
+MIN_DEPTH, MAX_DEPTH = (1, 4)
+MIN_NUMVARS, MAX_NUMVARS = (1, 4)
+MIN_NUMASTS, MAX_NUMASTS = (1, 4)
 ###############################################################################
 
 
 def main(gen_input_files=False):
     """ Creates smt2 input files and places into input directory if arg is True, then runs solvers on a sample of the files in input dir """
     if not os.path.isdir(INPUT_DIR):
-        print("[!] Please create {0} and run again".format(
+        print("creating folder {0} and runing ".format(
             INPUT_DIR), flush=True)
-        raise NotImplementedError
+        os.mkdir("./inputs")
+        os.mkdir("./inputs/cactus")
     if gen_input_files:
         create_benchmark_files()  # generate input files
 
@@ -265,4 +266,4 @@ def main(gen_input_files=False):
 
 
 if __name__ == '__main__':
-    main(gen_input_files=False)
+    main(gen_input_files=True)
