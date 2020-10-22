@@ -197,7 +197,7 @@ def show_cactus_plot(solver_times):
                     for interval in time_intervals]
         plt.plot(time_intervals, n_solver, label=solver_labels[idx])
 
-    plt.title("Solver Survival with BanditFuzz (i9 9900K: {0} threads)".format(
+    plt.title("Solver Survival with BanditFuzz (i7-6500U CPU: {0} threads)".format(
         MAX_WORKERS))
     plt.xscale('log')
     plt.xlabel('Time (s)')
@@ -231,8 +231,8 @@ CVC4_BIN = "./runs/cvc4"
 BOOLECTOR_BIN = "./runs/boolector"
 
 TIMEOUT = 5
-MAX_WORKERS = 2  # Make the 9900K sweat
-SAMPLE_SIZE = 10  # How many files to run solvers on
+MAX_WORKERS = 4  # Make the 9900K sweat
+SAMPLE_SIZE = 1500  # How many files to run solvers on
 
 MIN_WIDTH, MAX_WIDTH = (1, 8)  # for benchmark file creation
 MIN_DEPTH, MAX_DEPTH = (1, 4)
